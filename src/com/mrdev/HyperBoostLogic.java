@@ -1,11 +1,11 @@
 package com.mrdev;
 
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -24,15 +24,11 @@ public class HyperBoostLogic {
     private double sumDriveIns = 0;
     private double sumRent = 0;
     private double sumGoods = 0;
-    private ArrayList<String> services = new ArrayList<>(); //stores all services NOT REPEATING
-    private ArrayList<String> goods = new ArrayList<>();
+    private ArrayList<String> services = new ArrayList<>(); //stores all services
+    private ArrayList<String> goods = new ArrayList<>(); // stores all goods
 
-    //FINAL ARRAYS TO BE WRITTEN IN EXCEL
-    private ArrayList<DocumentItem> driveInsF = new ArrayList<>();
-    private ArrayList<DocumentItem> rentsF = new ArrayList<>();
-    private ArrayList<DocumentItem> servicesF = new ArrayList<>();
-    private ArrayList<DocumentItem> goodsF = new ArrayList<>();
-
+    //LIST OF ALL ITEMS: CATEGORIZED (item.getItemType()) 0 - rent, 1 - driveIn, 2 - good, 3 - service
+    private ArrayList<DocumentItem> categorizedItems = new ArrayList<>();
 
     void openExcelDoc() throws IOException {
         fileInEkasa = new FileInputStream(new File("C:\\BOX\\eKasa\\report.xlsx"));
@@ -41,19 +37,17 @@ public class HyperBoostLogic {
         workbookCementary = new XSSFWorkbook(fileInCementary);
 
         doklady = workbookEkasa.getSheetAt(0);
-        System.out.println((doklady.getSheetName()));
+        System.out.println("Citanie dokladov z eKasy...");
         polozkyDokladu = workbookEkasa.getSheetAt(1);
         infoSheet = workbookEkasa.getSheetAt(2);
         cementary = workbookCementary.getSheetAt(0);
-//        System.out.println("Skontroluj spravnost harkov!\n-Prvy harok doklady\n-Druhy harok polozky dokladu");
     }
 
-    String getDate() {
+    String getDateFromDocument() {
         Row row = infoSheet.getRow(4);
         Date date = row.getCell(1).getDateCellValue();
         SimpleDateFormat df = new SimpleDateFormat("dd.MM.YYYY HH:mm:ss.SS");
         String fDate = df.format(date);
-        System.out.println("Datum uzavierky: " + fDate);
         return fDate;
     }
 
@@ -102,7 +96,7 @@ public class HyperBoostLogic {
             }
         }
         Data.getInstance().setInvalidItems(uids);
-        System.out.println("Pocet najdenych neplatnych poloziek: " + Data.getInstance().getInvalidItems().size());
+        System.out.println("\nPocet najdenych neplatnych poloziek: " + Data.getInstance().getInvalidItems().size());
     }
 
     void removeInvalidItems() {
@@ -110,68 +104,54 @@ public class HyperBoostLogic {
             for (int j = 0; j < Data.getInstance().getInvalidItems().size(); j++) {
                 if (Data.getInstance().getDocumentItems().get(i).getUid().equals(Data.getInstance().getInvalidItems().get(j))) {
                     Data.getInstance().getDocumentItems().remove(i);
-                    System.out.println("Zmazana neplatna polozka: " + Data.getInstance().getDocumentItems().get(i).getItemName());
+                    System.out.println("Vynechana neplatna polozka: " + Data.getInstance().getDocumentItems().get(i).getItemName());
                 }
             }
         }
-
     }
 
     void getRentsDriveInsServicesGoods() {
         for (DocumentItem item : Data.getInstance().getDocumentItems()) {
             if (item.getItemName().contains("nájom")) {
-                rentsF.add(item);
-                continue;
-            }
-            if (item.getItemName().contains("vjazd")) {
-                driveInsF.add(item);
-                continue;
-            }
-            if (goods.indexOf(item.getItemName()) != -1 || item.getItemName().contains("PLU")) { //Ak je to tovar
-                goodsF.add(item);
+                item.setItemType(0);
+            } else if (item.getItemName().contains("vjazd")) {
+                item.setItemType(1);
+            } else if (goods.indexOf(item.getItemName()) != -1 || item.getItemName().toLowerCase().contains("plu")) { //Ak je to tovar
+                item.setItemType(2);
             } else {
-                servicesF.add(item);
+                item.setItemType(3);
+            }
+            categorizedItems.add(item);
+        }
 
+    }
+
+    void sumItUp() {
+        for (DocumentItem item : categorizedItems) {
+            switch (item.getItemType()) {
+                case 0:
+                    sumRent += item.getPrice();
+                    break;
+                case 1:
+                    sumDriveIns += item.getPrice();
+                    break;
+                case 2:
+                    sumServices += item.getPrice();
+                    break;
+                case 3:
+                    sumGoods += item.getPrice();
+                    break;
             }
         }
-
-    }
-
-    void sumRent() {
-        for (DocumentItem item : rentsF) {
-            sumRent += item.getPrice();
-        }
-        System.out.println("Suma najmy: " + sumRent + " rentsF size" + rentsF.size());
-    }
-
-    void sumDriveIns() {
-        for (DocumentItem item : driveInsF) {
-            sumDriveIns += item.getPrice();
-        }
-        System.out.println("Suma vjazdy: " + sumDriveIns + " driveInsF size " + driveInsF.size());
-    }
-
-    void sumServices() {
-        for (DocumentItem item : servicesF) {
-            sumServices += item.getPrice();
-        }
-        System.out.println("Suma sluzby: " + sumServices + " servicesF size " + servicesF.size());
-    }
-
-    void sumGoods() {
-        for (DocumentItem item : goodsF) {
-            sumGoods += item.getPrice();
-        }
-        System.out.println("Suma tovar: " + sumGoods + " goodsF size " + goodsF.size());
+        System.out.println("\nSuma tovar: " + sumGoods);
+        System.out.println("Suma sluzby: " + sumServices);
+        System.out.println("Suma vjazdy: " + sumDriveIns);
+        System.out.println("Suma najmy: " + sumRent);
         System.out.println("Suma celkom: " + (sumGoods + sumServices + sumRent + sumDriveIns));
-        System.out.println("Celkovy pocet poloziek: " + (goodsF.size() + servicesF.size() + rentsF.size() + driveInsF.size()));
     }
 
-    /**
-     * Stlpec za GPS data bude rozdiel GPS cas - sonar cas
-     */
     void writeDataToExcel() throws IOException {
-        String date = this.getDate(); //Vracia datum ku ktorej sa uzavierka viaze
+        String date = this.getDateFromDocument(); //Vracia datum ku ktorej sa uzavierka viaze
 
         fileOut = new FileOutputStream(new File("report.xlsx"));
         removeExistingSheet(workbookEkasa);
@@ -184,8 +164,7 @@ public class HyperBoostLogic {
         dateTitle.setCellValue("Uzavierka ku dnu");
         dateValue.setCellValue(date);
 
-        ////Zahlavie Datum
-
+        ////Zahlavie Nazvy
         Row row1 = exportSheet.createRow(1);
         Cell names = row1.createCell(0);
         Cell sums = row1.createCell(1);
@@ -235,6 +214,7 @@ public class HyperBoostLogic {
         dDPHless.setCellValue(driveNoDPH);
         dDPH.setCellValue((sumDriveIns / (1.2)) * 0.2);
 
+        // Total
         Row row6 = exportSheet.createRow(5);
         Cell total = row6.createCell(0);
         Cell tSum = row6.createCell(1);
@@ -248,8 +228,6 @@ public class HyperBoostLogic {
         tDPH.setCellValue(sumDPH);
 
         //Rents do not count DPH
-//        double rentsNoDPH = sumRent / (1.2);
-//        double rentsDPH = (sumRent / (1.2)) * 0.2;
         Row row4 = exportSheet.createRow(8);
         Cell rents = row4.createCell(0);
         Cell rSum = row4.createCell(1);
@@ -258,7 +236,7 @@ public class HyperBoostLogic {
         rents.setCellValue("Nájmy");
         rSum.setCellValue(sumRent);
         rDPHless.setCellValue(sumRent);
-        rDPH.setCellValue(0);
+//        rDPH.setCellValue(0);
 
         workbookEkasa.write(fileOut);
         fileOut.close();

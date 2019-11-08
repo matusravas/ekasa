@@ -6,8 +6,15 @@ public class DocumentItem {
     private Double count;
     private Double sadzbaDPH;
     private Double price;
+    private int itemType;  //0 - rent, 1 - driveIn, 2 - good, 3 - service
 
+    public void setItemType(int itemType) {
+        this.itemType = itemType;
+    }
 
+    public int getItemType() {
+        return itemType;
+    }
 
     public String getUid() {
         return uid;
