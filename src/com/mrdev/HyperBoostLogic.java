@@ -31,9 +31,9 @@ public class HyperBoostLogic {
     private ArrayList<DocumentItem> categorizedItems = new ArrayList<>();
 
     void openExcelDoc() throws IOException {
-        fileInEkasa = new FileInputStream(new File("C:\\BOX\\eKasa\\report.xlsx"));
+        fileInEkasa = new FileInputStream(new File(".\\report.xlsx"));
         workbookEkasa = new XSSFWorkbook(fileInEkasa);
-        fileInCementary = new FileInputStream(new File("C:\\BOX\\eKasa\\cintorin.xlsx"));
+        fileInCementary = new FileInputStream(new File(".\\cintorin.xlsx"));
         workbookCementary = new XSSFWorkbook(fileInCementary);
 
         doklady = workbookEkasa.getSheetAt(0);
@@ -86,7 +86,7 @@ public class HyperBoostLogic {
     void readInvalidItems() {
         String name;
         ArrayList<String> uids = new ArrayList<>();
-        for (int i = 2; i < doklady.getLastRowNum(); i++) {
+        for (int i = 2; i < doklady.getLastRowNum() + 1; i++) {
             Row row = doklady.getRow(i);
             if (row != null || !row.getCell(0).getStringCellValue().isEmpty()) {
                 name = row.getCell(5).getStringCellValue().toLowerCase();
@@ -103,8 +103,8 @@ public class HyperBoostLogic {
         for (int i = 0; i < Data.getInstance().getDocumentItems().size(); i++) {
             for (int j = 0; j < Data.getInstance().getInvalidItems().size(); j++) {
                 if (Data.getInstance().getDocumentItems().get(i).getUid().equals(Data.getInstance().getInvalidItems().get(j))) {
-                    Data.getInstance().getDocumentItems().remove(i);
                     System.out.println("Vynechana neplatna polozka: " + Data.getInstance().getDocumentItems().get(i).getItemName());
+                    Data.getInstance().getDocumentItems().remove(i);
                 }
             }
         }
@@ -121,6 +121,10 @@ public class HyperBoostLogic {
             } else {
                 item.setItemType(3);
             }
+            /**
+             * Ked sa nenachadza item ani v nacitanych servisoch ani goods z cintorin.xlsx
+             * zarad ho do others a nakonci vsetky others vypises
+             */
             categorizedItems.add(item);
         }
 

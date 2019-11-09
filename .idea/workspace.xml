@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="eKasa:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="50d0f5f4-0873-41b6-a20b-5dd4e893777f" name="Default Changelist" comment="" />
+    <list default="true" id="50d0f5f4-0873-41b6-a20b-5dd4e893777f" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/report.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/mrdev/HyperBoostLogic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/mrdev/HyperBoostLogic.java" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,8 +30,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mrdev/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="14" column="114" selection-start-line="14" selection-start-column="114" selection-end-line="14" selection-end-column="114" />
+            <state relative-caret-position="731">
+              <caret line="43" column="29" selection-start-line="43" selection-start-column="29" selection-end-line="43" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -32,10 +42,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mrdev/Data.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="337">
-              <caret line="28" selection-start-line="28" selection-end-line="28" />
+            <state relative-caret-position="86">
+              <caret line="27" selection-start-line="27" selection-end-line="27" />
               <folding>
-                <element signature="e#665#666#0" expanded="true" />
+                <element signature="e#715#716#0" expanded="true" />
+                <element signature="e#782#783#0" expanded="true" />
+                <element signature="e#830#831#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -44,8 +56,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mrdev/DocumentItem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="18" selection-start-line="18" selection-end-line="18" />
+            <state relative-caret-position="136">
+              <caret line="8" column="29" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="73" />
             </state>
           </provider>
         </entry>
@@ -53,8 +65,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/mrdev/HyperBoostLogic.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="84">
-              <caret line="249" column="33" lean-forward="true" selection-start-line="249" selection-start-column="33" selection-end-line="249" selection-end-column="33" />
+            <state relative-caret-position="153">
+              <caret line="109" column="9" lean-forward="true" selection-start-line="109" selection-start-column="9" selection-end-line="109" selection-end-column="9" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -78,16 +90,19 @@
       <find>suma</find>
     </findStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/src/com/mrdev/HyperBoostLogic.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/com/mrdev/DocumentItem.java" />
         <option value="$PROJECT_DIR$/src/com/mrdev/Excel.java" />
         <option value="$PROJECT_DIR$/src/com/mrdev/Item.java" />
         <option value="$PROJECT_DIR$/src/com/mrdev/Data.java" />
+        <option value="$PROJECT_DIR$/src/com/mrdev/DocumentItem.java" />
         <option value="$PROJECT_DIR$/src/com/mrdev/Main.java" />
         <option value="$PROJECT_DIR$/src/com/mrdev/HyperBoostLogic.java" />
       </list>
@@ -104,6 +119,7 @@
     <option name="width" value="981" />
     <option name="height" value="1044" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -141,11 +157,16 @@
   </component>
   <component name="PropertiesComponent">
     <property name="Downloaded.Files.Path.Enabled" value="false" />
+    <property name="GenerateAntBuildDialog.backupFiles" value="true" />
+    <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
+    <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
+    <property name="GenerateAntBuildDialog.outputFileNameProperty" value="ekasa" />
     <property name="Repository.Attach.Annotations" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
   </component>
@@ -195,7 +216,7 @@
     <frame x="-7" y="-7" width="1295" height="704" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49825174" visible="true" weight="0.26639676" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49825174" visible="true" weight="0.28582996" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -204,7 +225,7 @@
       <window_info id="Favorites" order="6" sideWeight="0.50174826" side_tool="true" weight="0.26153848" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32867134" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32867134" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32867134" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.46328673" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -223,6 +244,24 @@
       <window_info anchor="right" id="Palette&#9;" order="7" />
     </layout>
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/com/mrdev/Data.java</url>
+          <line>27</line>
+          <properties />
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/com/mrdev/Data.java</url>
+          <line>31</line>
+          <properties />
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="editorHistoryManager">
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_181/src.zip!/java/util/ArrayList.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -232,37 +271,39 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mrdev/Item.java" />
-    <entry file="file://$PROJECT_DIR$/src/com/mrdev/Data.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="337">
-          <caret line="28" selection-start-line="28" selection-end-line="28" />
-          <folding>
-            <element signature="e#665#666#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mrdev/DocumentItem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="18" selection-start-line="18" selection-end-line="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mrdev/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="114" selection-start-line="14" selection-start-column="114" selection-end-line="14" selection-end-column="114" />
+        <state relative-caret-position="731">
+          <caret line="43" column="29" selection-start-line="43" selection-start-column="29" selection-end-line="43" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mrdev/DocumentItem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="29" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="73" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mrdev/Data.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="86">
+          <caret line="27" selection-start-line="27" selection-end-line="27" />
+          <folding>
+            <element signature="e#715#716#0" expanded="true" />
+            <element signature="e#782#783#0" expanded="true" />
+            <element signature="e#830#831#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mrdev/HyperBoostLogic.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="249" column="33" lean-forward="true" selection-start-line="249" selection-start-column="33" selection-end-line="249" selection-end-column="33" />
+        <state relative-caret-position="153">
+          <caret line="109" column="9" lean-forward="true" selection-start-line="109" selection-start-column="9" selection-end-line="109" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -275,10 +316,12 @@
       <state key="ArtifactsStructureConfigurable.UI">
         <settings>
           <artifact-editor />
+          <last-edited>eKasa:jar</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
                 <option value="0.2" />
+                <option value="0.5" />
               </list>
             </option>
           </splitter-proportions>
