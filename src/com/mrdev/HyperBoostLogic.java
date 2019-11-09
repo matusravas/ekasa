@@ -5,7 +5,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -15,11 +14,15 @@ public class HyperBoostLogic {
     private FileOutputStream fileOut;
     private XSSFWorkbook workbookEkasa;
     private XSSFWorkbook workbookCementary;
-    private XSSFSheet doklady;
-    private XSSFSheet polozkyDokladu;
+    private XSSFSheet documentsSheet;
+    private XSSFSheet documentItemsSheet;
     private XSSFSheet cementary;
     private XSSFSheet exportSheet;
     private XSSFSheet infoSheet;
+
+    private File reportFile;
+    private File cementaryFile;
+
     private double sumServices = 0;
     private double sumDriveIns = 0;
     private double sumRent = 0;
@@ -27,19 +30,38 @@ public class HyperBoostLogic {
     private ArrayList<String> services = new ArrayList<>(); //stores all services
     private ArrayList<String> goods = new ArrayList<>(); // stores all goods
 
-    //LIST OF ALL ITEMS: CATEGORIZED (item.getItemType()) 0 - rent, 1 - driveIn, 2 - good, 3 - service, 4 - uncategorized
+    //CATEGORIZED LIST OF ALL ITEMS, each item has its type available item.getItemType()
+    // 0 - rent, 1 - driveIn, 2 - good, 3 - service, 4 - uncategorized
     private ArrayList<DocumentItem> categorizedItems = new ArrayList<>();
     private ArrayList<DocumentItem> unCategorizedItems = new ArrayList<>();
 
+    void findExcelFiles() throws FileNotFoundException {
+        File folder = new File("./");
+        File[] listOfFiles = folder.listFiles();
+        for (int i = 0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].getName().contains(".xlsx")) {
+                if (listOfFiles[i].isFile() && listOfFiles[i].getName().contains("report")) {
+                    reportFile = new File(listOfFiles[i].getPath());
+                    fileInEkasa = new FileInputStream(reportFile);
+                }
+                if (listOfFiles[i].isFile() && listOfFiles[i].getName().contains("cintorin")) {
+                    cementaryFile = new File(listOfFiles[i].getPath());
+                    fileInCementary = new FileInputStream(cementaryFile);
+                }
+            }
+        }
+    }
+
     void openExcelDoc() throws IOException {
-        fileInEkasa = new FileInputStream(new File(".\\report.xlsx"));
+        findExcelFiles();
+//        fileInEkasa = new FileInputStream(new File(".\\report.xlsx"));
         workbookEkasa = new XSSFWorkbook(fileInEkasa);
-        fileInCementary = new FileInputStream(new File(".\\cintorin.xlsx"));
+//        fileInCementary = new FileInputStream(new File(".\\cintorin.xlsx"));
         workbookCementary = new XSSFWorkbook(fileInCementary);
 
-        doklady = workbookEkasa.getSheetAt(0);
+        documentsSheet = workbookEkasa.getSheetAt(0);
         System.out.println("Citanie dokladov z eKasy...");
-        polozkyDokladu = workbookEkasa.getSheetAt(1);
+        documentItemsSheet = workbookEkasa.getSheetAt(1);
         infoSheet = workbookEkasa.getSheetAt(2);
         cementary = workbookCementary.getSheetAt(0);
     }
@@ -55,8 +77,8 @@ public class HyperBoostLogic {
     void readDocumentItems() {
         DocumentItem item;
         ArrayList<DocumentItem> items = new ArrayList<>();
-        for (int i = 2; i < polozkyDokladu.getLastRowNum() + 1; i++) {
-            Row row = polozkyDokladu.getRow(i);
+        for (int i = 2; i < documentItemsSheet.getLastRowNum() + 1; i++) {
+            Row row = documentItemsSheet.getRow(i);
             if (row != null || !row.getCell(0).getStringCellValue().isEmpty()) {
                 item = new DocumentItem();
                 item.setUid(row.getCell(0).getStringCellValue());
@@ -87,8 +109,8 @@ public class HyperBoostLogic {
     void readInvalidItems() {
         String name;
         ArrayList<String> uids = new ArrayList<>();
-        for (int i = 2; i < doklady.getLastRowNum() + 1; i++) {
-            Row row = doklady.getRow(i);
+        for (int i = 2; i < documentsSheet.getLastRowNum() + 1; i++) {
+            Row row = documentsSheet.getRow(i);
             if (row != null || !row.getCell(0).getStringCellValue().isEmpty()) {
                 name = row.getCell(5).getStringCellValue().toLowerCase();
                 if (name.equals("neplatný doklad")) {
@@ -120,8 +142,7 @@ public class HyperBoostLogic {
                 item.setItemType(1);
             } else if (goods.indexOf(item.getItemName()) != -1 || item.getItemName().toLowerCase().contains("plu")) { //Ak je to tovar
                 item.setItemType(2);
-            }
-            else if (services.indexOf(item.getItemName()) != -1) {
+            } else if (services.indexOf(item.getItemName()) != -1) {
                 item.setItemType(3);
             } else {
                 unCategorizedItems.add(item); //na zaver su vsetky vypisane do excelu
@@ -171,14 +192,14 @@ public class HyperBoostLogic {
         removeExistingSheet(workbookEkasa);
         exportSheet = workbookEkasa.createSheet("Sumar");
 
-        ////Zahlavie Datum
+        // Header Date
         Row row0 = exportSheet.createRow(0);
         Cell dateTitle = row0.createCell(0);
         Cell dateValue = row0.createCell(1);
         dateTitle.setCellValue("Uzávierka ku dňu");
         dateValue.setCellValue(date);
 
-        ////Zahlavie Nazvy
+        // Header Titles
         Row row1 = exportSheet.createRow(2);
         Cell names = row1.createCell(0);
         Cell sums = row1.createCell(1);
@@ -189,7 +210,7 @@ public class HyperBoostLogic {
         DPHless.setCellValue("Bez DPH");
         DPH.setCellValue("DPH");
 
-        //goods
+        // Goods
         double goodsNoDPH = sumGoods / (1.2);
         double goodsDPH = (sumGoods / (1.2)) * 0.2;
         Row row2 = exportSheet.createRow(3);
@@ -202,7 +223,7 @@ public class HyperBoostLogic {
         gDPHless.setCellValue(goodsNoDPH);
         gDPH.setCellValue(goodsDPH);
 
-        //services
+        // Services
         double servicesNoDPH = sumServices / (1.2);
         double servicesDPH = (sumServices / (1.2)) * 0.2;
         Row row3 = exportSheet.createRow(4);
@@ -215,7 +236,7 @@ public class HyperBoostLogic {
         sDPHless.setCellValue(servicesNoDPH);
         sDPH.setCellValue(servicesDPH);
 
-        //DriveIns
+        // DriveIns
         double driveNoDPH = sumDriveIns / (1.2);
         double driveDPH = (sumDriveIns / (1.2)) * 0.2;
         Row row5 = exportSheet.createRow(5);
@@ -241,7 +262,7 @@ public class HyperBoostLogic {
         double sumDPH = (driveDPH + servicesDPH + goodsDPH);
         tDPH.setCellValue(sumDPH);
 
-        //Rents do not count DPH
+        // Rents do not count DPH
         Row row4 = exportSheet.createRow(8);
         Cell rents = row4.createCell(0);
         Cell rSum = row4.createCell(1);
@@ -250,17 +271,18 @@ public class HyperBoostLogic {
         rents.setCellValue("Nájmy");
         rSum.setCellValue(sumRent);
         rDPHless.setCellValue(sumRent);
-//        rDPH.setCellValue(0);
 
+        // Header uncategorized items
         Row row7 = exportSheet.createRow(10);
         Cell uncategorized = row7.createCell(0);
         uncategorized.setCellValue("Nekategorizované položky");
         Row row8 = exportSheet.createRow(11);
         Cell cItem = row8.createCell(0);
         cItem.setCellValue("Položka");
-        Cell cPrice =row8.createCell(1);
+        Cell cPrice = row8.createCell(1);
         cPrice.setCellValue("Cena celkom");
 
+        // Listing of uncategorized items
         for (int i = 0; i < unCategorizedItems.size(); i++) {
             Row row = exportSheet.createRow(12 + i);
             Cell cellItem = row.createCell(0);
