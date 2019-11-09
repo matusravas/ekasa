@@ -145,13 +145,9 @@ public class HyperBoostLogic {
             } else if (services.indexOf(item.getItemName()) != -1) {
                 item.setItemType(3);
             } else {
-                unCategorizedItems.add(item); //na zaver su vsetky vypisane do excelu
+                unCategorizedItems.add(item); //na zaver su vsetky nekategorizovane polozky vypisane do excelu
                 item.setItemType(4);
             }
-            /**
-             * Ked sa nenachadza item ani v nacitanych servisoch ani goods z cintorin.xlsx
-             * zarad ho do others a nakonci vsetky others vypises
-             */
             categorizedItems.add(item);
         }
 
