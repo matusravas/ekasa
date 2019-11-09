@@ -7,7 +7,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="50d0f5f4-0873-41b6-a20b-5dd4e893777f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/report.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/report.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/mrdev/HyperBoostLogic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/mrdev/HyperBoostLogic.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -63,8 +62,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/mrdev/HyperBoostLogic.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="417">
-              <caret line="332" column="37" selection-start-line="332" selection-start-column="37" selection-end-line="332" selection-end-column="37" />
+            <state relative-caret-position="282">
+              <caret line="190" column="33" selection-start-line="190" selection-start-column="33" selection-end-line="190" selection-end-column="33" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -112,7 +111,7 @@
       <select />
     </treeState>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-12" />
     <option name="width" value="981" />
     <option name="height" value="1044" />
@@ -300,8 +299,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mrdev/HyperBoostLogic.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="417">
-          <caret line="332" column="37" selection-start-line="332" selection-start-column="37" selection-end-line="332" selection-end-column="37" />
+        <state relative-caret-position="282">
+          <caret line="190" column="33" selection-start-line="190" selection-start-column="33" selection-end-line="190" selection-end-column="33" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

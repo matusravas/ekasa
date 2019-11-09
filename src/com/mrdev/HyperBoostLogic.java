@@ -188,7 +188,7 @@ public class HyperBoostLogic {
                     break;
             }
         }
-        countCategorizedTotal = (countRent + countDriveIns + countServices + countGoods);
+        countCategorizedTotal = (countDriveIns + countServices + countGoods);
         System.out.println("\nSuma tovar: " + sumGoods);
         System.out.println("Suma sluzby: " + sumServices);
         System.out.println("Suma vjazdy: " + sumDriveIns);
