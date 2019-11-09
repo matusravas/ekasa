@@ -27,8 +27,9 @@ public class HyperBoostLogic {
     private ArrayList<String> services = new ArrayList<>(); //stores all services
     private ArrayList<String> goods = new ArrayList<>(); // stores all goods
 
-    //LIST OF ALL ITEMS: CATEGORIZED (item.getItemType()) 0 - rent, 1 - driveIn, 2 - good, 3 - service
+    //LIST OF ALL ITEMS: CATEGORIZED (item.getItemType()) 0 - rent, 1 - driveIn, 2 - good, 3 - service, 4 - uncategorized
     private ArrayList<DocumentItem> categorizedItems = new ArrayList<>();
+    private ArrayList<DocumentItem> unCategorizedItems = new ArrayList<>();
 
     void openExcelDoc() throws IOException {
         fileInEkasa = new FileInputStream(new File(".\\report.xlsx"));
@@ -107,6 +108,7 @@ public class HyperBoostLogic {
                     Data.getInstance().getDocumentItems().remove(i);
                 }
             }
+            System.out.print("\n");
         }
     }
 
@@ -118,8 +120,12 @@ public class HyperBoostLogic {
                 item.setItemType(1);
             } else if (goods.indexOf(item.getItemName()) != -1 || item.getItemName().toLowerCase().contains("plu")) { //Ak je to tovar
                 item.setItemType(2);
-            } else {
+            }
+            else if (services.indexOf(item.getItemName()) != -1) {
                 item.setItemType(3);
+            } else {
+                unCategorizedItems.add(item); //na zaver su vsetky vypisane do excelu
+                item.setItemType(4);
             }
             /**
              * Ked sa nenachadza item ani v nacitanych servisoch ani goods z cintorin.xlsx
@@ -140,10 +146,14 @@ public class HyperBoostLogic {
                     sumDriveIns += item.getPrice();
                     break;
                 case 2:
-                    sumServices += item.getPrice();
+                    sumGoods += item.getPrice();
                     break;
                 case 3:
-                    sumGoods += item.getPrice();
+                    sumServices += item.getPrice();
+                    break;
+                case 4:
+                    System.out.println("Nekategorizovana polozka: " + item.getItemName());
+                    System.out.println("Suma: " + item.getPrice());
                     break;
             }
         }
@@ -165,11 +175,11 @@ public class HyperBoostLogic {
         Row row0 = exportSheet.createRow(0);
         Cell dateTitle = row0.createCell(0);
         Cell dateValue = row0.createCell(1);
-        dateTitle.setCellValue("Uzavierka ku dnu");
+        dateTitle.setCellValue("Uzávierka ku dňu");
         dateValue.setCellValue(date);
 
         ////Zahlavie Nazvy
-        Row row1 = exportSheet.createRow(1);
+        Row row1 = exportSheet.createRow(2);
         Cell names = row1.createCell(0);
         Cell sums = row1.createCell(1);
         Cell DPHless = row1.createCell(2);
@@ -182,7 +192,7 @@ public class HyperBoostLogic {
         //goods
         double goodsNoDPH = sumGoods / (1.2);
         double goodsDPH = (sumGoods / (1.2)) * 0.2;
-        Row row2 = exportSheet.createRow(2);
+        Row row2 = exportSheet.createRow(3);
         Cell goods = row2.createCell(0);
         Cell gSum = row2.createCell(1);
         Cell gDPHless = row2.createCell(2);
@@ -195,7 +205,7 @@ public class HyperBoostLogic {
         //services
         double servicesNoDPH = sumServices / (1.2);
         double servicesDPH = (sumServices / (1.2)) * 0.2;
-        Row row3 = exportSheet.createRow(3);
+        Row row3 = exportSheet.createRow(4);
         Cell services = row3.createCell(0);
         Cell sSum = row3.createCell(1);
         Cell sDPHless = row3.createCell(2);
@@ -208,7 +218,7 @@ public class HyperBoostLogic {
         //DriveIns
         double driveNoDPH = sumDriveIns / (1.2);
         double driveDPH = (sumDriveIns / (1.2)) * 0.2;
-        Row row5 = exportSheet.createRow(4);
+        Row row5 = exportSheet.createRow(5);
         Cell drives = row5.createCell(0);
         Cell dSum = row5.createCell(1);
         Cell dDPHless = row5.createCell(2);
@@ -219,7 +229,7 @@ public class HyperBoostLogic {
         dDPH.setCellValue((sumDriveIns / (1.2)) * 0.2);
 
         // Total
-        Row row6 = exportSheet.createRow(5);
+        Row row6 = exportSheet.createRow(6);
         Cell total = row6.createCell(0);
         Cell tSum = row6.createCell(1);
         Cell tDPHless = row6.createCell(2);
@@ -241,6 +251,23 @@ public class HyperBoostLogic {
         rSum.setCellValue(sumRent);
         rDPHless.setCellValue(sumRent);
 //        rDPH.setCellValue(0);
+
+        Row row7 = exportSheet.createRow(10);
+        Cell uncategorized = row7.createCell(0);
+        uncategorized.setCellValue("Nekategorizované položky");
+        Row row8 = exportSheet.createRow(11);
+        Cell cItem = row8.createCell(0);
+        cItem.setCellValue("Položka");
+        Cell cPrice =row8.createCell(1);
+        cPrice.setCellValue("Cena celkom");
+
+        for (int i = 0; i < unCategorizedItems.size(); i++) {
+            Row row = exportSheet.createRow(12 + i);
+            Cell cellItem = row.createCell(0);
+            Cell cellPrice = row.createCell(1);
+            cellItem.setCellValue(unCategorizedItems.get(i).getItemName());
+            cellPrice.setCellValue(unCategorizedItems.get(i).getPrice());
+        }
 
         workbookEkasa.write(fileOut);
         fileOut.close();

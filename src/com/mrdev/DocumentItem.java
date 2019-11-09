@@ -6,7 +6,7 @@ public class DocumentItem {
     private Double count;
     private Double sadzbaDPH;
     private Double price;
-    private int itemType;  //0 - rent, 1 - driveIn, 2 - good, 3 - service
+    private int itemType;  //0 - rent, 1 - driveIn, 2 - good, 3 - service, 4 - uncategorized
 
     public void setItemType(int itemType) {
         this.itemType = itemType;
