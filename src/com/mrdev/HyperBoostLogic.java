@@ -108,8 +108,8 @@ public class HyperBoostLogic {
                     Data.getInstance().getDocumentItems().remove(i);
                 }
             }
-            System.out.print("\n");
         }
+        System.out.print("\n");
     }
 
     void getRentsDriveInsServicesGoods() {
