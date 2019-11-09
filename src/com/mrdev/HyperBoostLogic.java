@@ -27,6 +27,15 @@ public class HyperBoostLogic {
     private double sumDriveIns = 0;
     private double sumRent = 0;
     private double sumGoods = 0;
+
+    private double countServices = 0;
+    private double countDriveIns = 0;
+    private double countRent = 0;
+    private double countGoods = 0;
+
+    private double countCategorizedTotal = 0;
+    private double countUncategorizedTotal = 0;
+
     private ArrayList<String> services = new ArrayList<>(); //stores all services
     private ArrayList<String> goods = new ArrayList<>(); // stores all goods
 
@@ -158,22 +167,28 @@ public class HyperBoostLogic {
             switch (item.getItemType()) {
                 case 0:
                     sumRent += item.getPrice();
+                    countRent += item.getCount();
                     break;
                 case 1:
                     sumDriveIns += item.getPrice();
+                    countDriveIns += item.getCount();
                     break;
                 case 2:
                     sumGoods += item.getPrice();
+                    countGoods += item.getCount();
                     break;
                 case 3:
                     sumServices += item.getPrice();
+                    countServices += item.getCount();
                     break;
                 case 4:
                     System.out.println("Nekategorizovana polozka: " + item.getItemName());
                     System.out.println("Suma: " + item.getPrice());
+                    countUncategorizedTotal += item.getCount();
                     break;
             }
         }
+        countCategorizedTotal = (countRent + countDriveIns + countServices + countGoods);
         System.out.println("\nSuma tovar: " + sumGoods);
         System.out.println("Suma sluzby: " + sumServices);
         System.out.println("Suma vjazdy: " + sumDriveIns);
@@ -184,8 +199,8 @@ public class HyperBoostLogic {
     void writeDataToExcel() throws IOException {
         String date = this.getDateFromDocument(); //Vracia datum ku ktorej sa uzavierka viaze
 
-        fileOut = new FileOutputStream(new File("report.xlsx"));
-        removeExistingSheet(workbookEkasa);
+        fileOut = new FileOutputStream(reportFile);
+        removeExistingSheet(workbookEkasa, "Sumar");
         exportSheet = workbookEkasa.createSheet("Sumar");
 
         // Header Date
@@ -201,10 +216,12 @@ public class HyperBoostLogic {
         Cell sums = row1.createCell(1);
         Cell DPHless = row1.createCell(2);
         Cell DPH = row1.createCell(3);
+        Cell count = row1.createCell(4);
         names.setCellValue("Názov");
         sums.setCellValue("Suma");
         DPHless.setCellValue("Bez DPH");
         DPH.setCellValue("DPH");
+        count.setCellValue("Počet položiek");
 
         // Goods
         double goodsNoDPH = sumGoods / (1.2);
@@ -214,10 +231,12 @@ public class HyperBoostLogic {
         Cell gSum = row2.createCell(1);
         Cell gDPHless = row2.createCell(2);
         Cell gDPH = row2.createCell(3);
+        Cell gCount = row2.createCell(4);
         goods.setCellValue("Tovar");
         gSum.setCellValue(sumGoods);
         gDPHless.setCellValue(goodsNoDPH);
         gDPH.setCellValue(goodsDPH);
+        gCount.setCellValue(countGoods);
 
         // Services
         double servicesNoDPH = sumServices / (1.2);
@@ -227,10 +246,12 @@ public class HyperBoostLogic {
         Cell sSum = row3.createCell(1);
         Cell sDPHless = row3.createCell(2);
         Cell sDPH = row3.createCell(3);
+        Cell sCount = row3.createCell(4);
         services.setCellValue("Služba");
         sSum.setCellValue(sumServices);
         sDPHless.setCellValue(servicesNoDPH);
         sDPH.setCellValue(servicesDPH);
+        sCount.setCellValue(countServices);
 
         // DriveIns
         double driveNoDPH = sumDriveIns / (1.2);
@@ -240,10 +261,12 @@ public class HyperBoostLogic {
         Cell dSum = row5.createCell(1);
         Cell dDPHless = row5.createCell(2);
         Cell dDPH = row5.createCell(3);
+        Cell dCount = row5.createCell(4);
         drives.setCellValue("Vjazdy");
         dSum.setCellValue(sumDriveIns);
         dDPHless.setCellValue(driveNoDPH);
         dDPH.setCellValue((sumDriveIns / (1.2)) * 0.2);
+        dCount.setCellValue(countDriveIns);
 
         // Total
         Row row6 = exportSheet.createRow(6);
@@ -251,12 +274,14 @@ public class HyperBoostLogic {
         Cell tSum = row6.createCell(1);
         Cell tDPHless = row6.createCell(2);
         Cell tDPH = row6.createCell(3);
+        Cell tCount = row6.createCell(4);
         total.setCellValue("Spolu");
         tSum.setCellValue((sumDriveIns + sumServices + sumRent + sumGoods));
         double sumNoDPH = (driveNoDPH + servicesNoDPH + goodsNoDPH);
         tDPHless.setCellValue(sumNoDPH);
         double sumDPH = (driveDPH + servicesDPH + goodsDPH);
         tDPH.setCellValue(sumDPH);
+        tCount.setCellValue(countCategorizedTotal);
 
         // Rents do not count DPH
         Row row4 = exportSheet.createRow(8);
@@ -264,37 +289,61 @@ public class HyperBoostLogic {
         Cell rSum = row4.createCell(1);
         Cell rDPHless = row4.createCell(2);
         Cell rDPH = row4.createCell(3);
+        Cell rCount = row4.createCell(4);
         rents.setCellValue("Nájmy");
         rSum.setCellValue(sumRent);
         rDPHless.setCellValue(sumRent);
+        rCount.setCellValue(countRent);
 
         // Header uncategorized items
         Row row7 = exportSheet.createRow(10);
         Cell uncategorized = row7.createCell(0);
         uncategorized.setCellValue("Nekategorizované položky");
+//        Cell countUncategorized = row7.createCell(1);
+//        countUncategorized.setCellValue(countUncategorizedTotal);
         Row row8 = exportSheet.createRow(11);
         Cell cItem = row8.createCell(0);
         cItem.setCellValue("Položka");
         Cell cPrice = row8.createCell(1);
         cPrice.setCellValue("Cena celkom");
+        Cell cCount = row8.createCell(2);
+        cCount.setCellValue("Množstvo");
+        Cell ciPrice = row8.createCell(3);
+        ciPrice.setCellValue("Jednotková cena");
 
         // Listing of uncategorized items
-        for (int i = 0; i < unCategorizedItems.size(); i++) {
+        int i;
+        double sumUncategorized = 0;
+        for (i = 0; i < unCategorizedItems.size(); i++) {
+            sumUncategorized += unCategorizedItems.get(i).getPrice();
             Row row = exportSheet.createRow(12 + i);
             Cell cellItem = row.createCell(0);
             Cell cellPrice = row.createCell(1);
+            Cell cellCount = row.createCell(2);
+            Cell cellItemPrice = row.createCell(3);
             cellItem.setCellValue(unCategorizedItems.get(i).getItemName());
             cellPrice.setCellValue(unCategorizedItems.get(i).getPrice());
+            cellCount.setCellValue(unCategorizedItems.get(i).getCount());
+            cellItemPrice.setCellValue((unCategorizedItems.get(i).getPrice() / unCategorizedItems.get(i).getCount()));
         }
+        // Last row positioned on after latest row from previous for cycle
+        // this row is written total sum, count of uncategorized items
+        Row rowUncategorized = exportSheet.createRow(12 + i);
+        Cell uTotal = rowUncategorized.createCell(0);
+        uTotal.setCellValue("Spolu");
+        Cell uSum = rowUncategorized.createCell(1);
+        uSum.setCellValue(sumUncategorized);
+        Cell uCount = rowUncategorized.createCell(2);
+        uCount.setCellValue(countUncategorizedTotal);
 
         workbookEkasa.write(fileOut);
         fileOut.close();
     }
 
-    private void removeExistingSheet(XSSFWorkbook workbook) {
+    private void removeExistingSheet(XSSFWorkbook workbook, String sheetName) {
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             XSSFSheet tmpSheet = workbook.getSheetAt(i);
-            if (tmpSheet.getSheetName().equals("Sumar")) {
+            if (tmpSheet.getSheetName().equals(sheetName)) {
                 workbook.removeSheetAt(i);
             }
         }
