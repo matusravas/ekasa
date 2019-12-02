@@ -155,7 +155,6 @@ public class HyperBoostLogic {
                         String itemName = item.getItemName();
                         if (itemName.charAt(i) == ' ') {
                             itemName = itemName.substring(i + 1, itemName.length());
-//                            System.out.println("Substringed name of item: " + itemName); // Todo odstran z produkcnej verzie
                             if (itemName.startsWith("nájom")) {
                                 item.setItemType(0);
                             } else item.setItemType(4);
@@ -211,7 +210,7 @@ public class HyperBoostLogic {
                     countServices += item.getCount();
                     break;
                 case 4:
-                    System.out.println("Nekategorizovana polozka: " + item.getItemName()+", cena: "+item.getPrice());
+                    System.out.println("Nekategorizovana polozka: " + item.getItemName() + ", cena: " + item.getPrice());
 //                    System.out.println("Suma: " + item.getPrice());
                     sumUncategorized += item.getPrice();
                     countUncategorizedTotal += item.getCount();
@@ -230,7 +229,6 @@ public class HyperBoostLogic {
 
     void writeDataToExcel() throws IOException {
         String date = this.getDateFromEkasaDocument(); //Vracia datum ku ktorej sa uzavierka viaze
-//        int currentRowIndex = 0;
         fileOut = new FileOutputStream(reportFile);
         removeExistingSheet(workbookEkasa, "Sumar");
         exportSheet = workbookEkasa.createSheet("Sumar");
@@ -344,24 +342,24 @@ public class HyperBoostLogic {
         ciPrice.setCellValue("Jednotková cena");
 
         // Listing of uncategorized items
-        int rowCount;
+        int currentRowIndex;
         int rowCountForServices;
 //        double sumUncategorized = 0;
-        for (rowCount = 0; rowCount < unCategorizedItems.size(); rowCount++) {
-//            sumUncategorized += unCategorizedItems.get(rowCount).getPrice();
-            Row row = exportSheet.createRow(12 + rowCount);
+        for (currentRowIndex = 0; currentRowIndex < unCategorizedItems.size(); currentRowIndex++) {
+//            sumUncategorized += unCategorizedItems.get(currentRowIndex).getPrice();
+            Row row = exportSheet.createRow(12 + currentRowIndex);
             Cell cellItem = row.createCell(0);
             Cell cellPrice = row.createCell(1);
             Cell cellCount = row.createCell(2);
             Cell cellItemPrice = row.createCell(3);
-            cellItem.setCellValue(unCategorizedItems.get(rowCount).getItemName());
-            cellPrice.setCellValue(unCategorizedItems.get(rowCount).getPrice());
-            cellCount.setCellValue(unCategorizedItems.get(rowCount).getCount());
-            cellItemPrice.setCellValue((unCategorizedItems.get(rowCount).getPrice() / unCategorizedItems.get(rowCount).getCount()));
+            cellItem.setCellValue(unCategorizedItems.get(currentRowIndex).getItemName());
+            cellPrice.setCellValue(unCategorizedItems.get(currentRowIndex).getPrice());
+            cellCount.setCellValue(unCategorizedItems.get(currentRowIndex).getCount());
+            cellItemPrice.setCellValue((unCategorizedItems.get(currentRowIndex).getPrice() / unCategorizedItems.get(currentRowIndex).getCount()));
         }
         // Last row positioned after latest row from previous for cycle
         // this row is written total sum, count of uncategorized items
-        Row rowUncategorized = exportSheet.createRow(12 + rowCount);
+        Row rowUncategorized = exportSheet.createRow(12 + currentRowIndex);
         Cell uTotal = rowUncategorized.createCell(0);
         uTotal.setCellValue("Spolu");
         Cell uSum = rowUncategorized.createCell(1);
@@ -369,16 +367,16 @@ public class HyperBoostLogic {
         Cell uCount = rowUncategorized.createCell(2);
         uCount.setCellValue(countUncategorizedTotal);
 
-        rowCountForServices = 14 + rowCount;
-        Row rowServices = exportSheet.createRow(rowCountForServices);
+        currentRowIndex = (14 + currentRowIndex);
+        Row rowServices = exportSheet.createRow(currentRowIndex);
         Cell service = rowServices.createCell(0);
         service.setCellValue("Služby");
         Cell servicePrice = rowServices.createCell(1);
         servicePrice.setCellValue("Cena");
         for (int i = 0; i < categorizedItems.size(); i++) {
             if (categorizedItems.get(i).getItemType() == 3) {
-                rowCountForServices++;
-                Row rowService = exportSheet.createRow(rowCountForServices);
+                currentRowIndex++;
+                Row rowService = exportSheet.createRow(currentRowIndex);
                 Cell cellService = rowService.createCell(0);
                 Cell cellServicePrice = rowService.createCell(1);
                 cellService.setCellValue(categorizedItems.get(i).getItemName());
