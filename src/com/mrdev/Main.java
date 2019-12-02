@@ -10,13 +10,13 @@ public class Main {
         try {
             hyperBoostLogic.openExcelDoc();
         } catch (IOException e) {
-            System.out.println("Dokument report.xlsx alebo cintorin.xlsx neexistuje v adresari, kde sa nachadza spustany .exe subor,");
+            System.out.println("Dokument report.xlsx alebo cintorin.xlsx neexistuje v adresari, kde sa nachadza spustany .exe subor.");
             System.out.println("Excel subory sa MUSIA! volat report.xlsx a cintorin.xlsx!");
             return;
         }
-        hyperBoostLogic.readDocumentItems();
-        System.out.println("Uzavierka k datumu: " + hyperBoostLogic.getDateFromDocument());
-        hyperBoostLogic.readCementaryItems();
+        hyperBoostLogic.readEkasaDocumentItems();
+        System.out.println("Uzavierka k datumu: " + hyperBoostLogic.getDateFromEkasaDocument());
+        hyperBoostLogic.readAllCementaryItems();
         hyperBoostLogic.readInvalidItems();
         hyperBoostLogic.removeInvalidItems();
         hyperBoostLogic.getRentsDriveInsServicesGoods();

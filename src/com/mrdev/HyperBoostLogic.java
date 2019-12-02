@@ -24,12 +24,13 @@ public class HyperBoostLogic {
     private File cementaryFile;
 
     private double sumServices = 0;
-    private double sumDriveIns = 0;
+    private double sumDrives = 0;
     private double sumRent = 0;
     private double sumGoods = 0;
+    private double sumUncategorized = 0;
 
     private double countServices = 0;
-    private double countDriveIns = 0;
+    private double countDrives = 0;
     private double countRent = 0;
     private double countGoods = 0;
 
@@ -40,7 +41,7 @@ public class HyperBoostLogic {
     private ArrayList<String> goods = new ArrayList<>(); // stores all goods
 
     //CATEGORIZED LIST OF ALL ITEMS, each item has its type available item.getItemType()
-    // 0 - rent, 1 - driveIn, 2 - good, 3 - service, 4 - uncategorized
+    // 0 - rent, 1 - drive, 2 - good, 3 - service, 4 - uncategorized
     private ArrayList<DocumentItem> categorizedItems = new ArrayList<>();
     private ArrayList<DocumentItem> unCategorizedItems = new ArrayList<>();
 
@@ -75,7 +76,7 @@ public class HyperBoostLogic {
         cementary = workbookCementary.getSheetAt(0);
     }
 
-    String getDateFromDocument() {
+    String getDateFromEkasaDocument() {
         Row row = infoSheet.getRow(4);
         Date date = row.getCell(1).getDateCellValue();
         SimpleDateFormat df = new SimpleDateFormat("dd.MM.YYYY HH:mm:ss.SS");
@@ -83,7 +84,7 @@ public class HyperBoostLogic {
         return fDate;
     }
 
-    void readDocumentItems() {
+    void readEkasaDocumentItems() {
         DocumentItem item;
         ArrayList<DocumentItem> items = new ArrayList<>();
         for (int i = 2; i < documentItemsSheet.getLastRowNum() + 1; i++) {
@@ -101,14 +102,14 @@ public class HyperBoostLogic {
         Data.getInstance().setDocumentItems(items);
     }
 
-    void readCementaryItems() {
+    void readAllCementaryItems() {
         for (int i = 1; i < cementary.getLastRowNum() + 1; i++) {
             Row row = cementary.getRow(i);
             if (row != null || !row.getCell(0).getStringCellValue().isEmpty()) {
-                if (row.getCell(6).getNumericCellValue() == 2.0) { //sluzba
+                if (row.getCell(6).getNumericCellValue() == 2f) { //sluzba
                     services.add(row.getCell(2).getStringCellValue());
                 }
-                if (row.getCell(6).getNumericCellValue() == 1.0) { //tovar
+                if (row.getCell(6).getNumericCellValue() == 1f) { //tovar
                     goods.add(row.getCell(2).getStringCellValue());
                 }
             }
@@ -146,12 +147,41 @@ public class HyperBoostLogic {
     void getRentsDriveInsServicesGoods() {
         for (DocumentItem item : Data.getInstance().getDocumentItems()) {
             if (item.getItemName().contains("nájom")) {
-                item.setItemType(0);
+                //if only "najom"
+                if (item.getItemName().startsWith("nájom")) { //vzdy ale zacina s nájom
+                    item.setItemType(0);
+                } else { //ak by predsa len nezacinal polozka stringom nájom pozeram vzdy za medzeru ci je string cisto len najom
+                    for (int i = 0; i <= item.getItemName().length() - 1; i++) {
+                        String itemName = item.getItemName();
+                        if (itemName.charAt(i) == ' ') {
+                            itemName = itemName.substring(i + 1, itemName.length());
+//                            System.out.println("Substringed name of item: " + itemName); // Todo odstran z produkcnej verzie
+                            if (itemName.startsWith("nájom")) {
+                                item.setItemType(0);
+                            } else item.setItemType(4);
+                        }
+                    }
+                }
+                //item.setItemType(0);
             } else if (item.getItemName().contains("vjazd")) {
-                item.setItemType(1);
+                if (item.getItemName().startsWith("vjazd")) {
+                    item.setItemType(1);
+                } else {
+                    for (int i = 0; i <= item.getItemName().length() - 1; i++) {
+                        String itemName = item.getItemName();
+                        if (itemName.charAt(i) == ' ') {
+                            itemName = itemName.substring(i + 1, itemName.length());
+                            if (itemName.startsWith("vjazd")) {
+                                item.setItemType(1);
+                            } else item.setItemType(4);
+                        }
+                    }
+                }
+//                item.setItemType(1);
             } else if (goods.indexOf(item.getItemName()) != -1 || item.getItemName().toLowerCase().contains("plu")) { //Ak je to tovar
                 item.setItemType(2);
             } else if (services.indexOf(item.getItemName()) != -1) {
+                System.out.println("Sluzba: " + item.getItemName() + ", cena: " + item.getPrice());
                 item.setItemType(3);
             } else {
                 unCategorizedItems.add(item); //na zaver su vsetky nekategorizovane polozky vypisane do excelu
@@ -159,7 +189,6 @@ public class HyperBoostLogic {
             }
             categorizedItems.add(item);
         }
-
     }
 
     void sumItUp() {
@@ -170,8 +199,8 @@ public class HyperBoostLogic {
                     countRent += item.getCount();
                     break;
                 case 1:
-                    sumDriveIns += item.getPrice();
-                    countDriveIns += item.getCount();
+                    sumDrives += item.getPrice();
+                    countDrives += item.getCount();
                     break;
                 case 2:
                     sumGoods += item.getPrice();
@@ -182,23 +211,26 @@ public class HyperBoostLogic {
                     countServices += item.getCount();
                     break;
                 case 4:
-                    System.out.println("Nekategorizovana polozka: " + item.getItemName());
-                    System.out.println("Suma: " + item.getPrice());
+                    System.out.println("Nekategorizovana polozka: " + item.getItemName()+", cena: "+item.getPrice());
+//                    System.out.println("Suma: " + item.getPrice());
+                    sumUncategorized += item.getPrice();
                     countUncategorizedTotal += item.getCount();
                     break;
             }
         }
-        countCategorizedTotal = (countDriveIns + countServices + countGoods);
+        countCategorizedTotal = (countDrives + countServices + countGoods);
         System.out.println("\nSuma tovar: " + sumGoods);
         System.out.println("Suma sluzby: " + sumServices);
-        System.out.println("Suma vjazdy: " + sumDriveIns);
+        System.out.println("Suma vjazdy: " + sumDrives);
         System.out.println("Suma najmy: " + sumRent);
-        System.out.println("Suma celkom: " + (sumGoods + sumServices + sumRent + sumDriveIns));
+        System.out.println("Suma (tovar + sluzby + najmy + vjazdy): " + (sumGoods + sumServices + sumRent + sumDrives));
+        System.out.println("Suma nekategorizovane polozky celkom: " + (sumUncategorized));
+        System.out.println("Suma celkom: " + (sumGoods + sumServices + sumRent + sumDrives + sumUncategorized));
     }
 
     void writeDataToExcel() throws IOException {
-        String date = this.getDateFromDocument(); //Vracia datum ku ktorej sa uzavierka viaze
-
+        String date = this.getDateFromEkasaDocument(); //Vracia datum ku ktorej sa uzavierka viaze
+//        int currentRowIndex = 0;
         fileOut = new FileOutputStream(reportFile);
         removeExistingSheet(workbookEkasa, "Sumar");
         exportSheet = workbookEkasa.createSheet("Sumar");
@@ -254,8 +286,8 @@ public class HyperBoostLogic {
         sCount.setCellValue(countServices);
 
         // DriveIns
-        double driveNoDPH = sumDriveIns / (1.2);
-        double driveDPH = (sumDriveIns / (1.2)) * 0.2;
+        double driveNoDPH = sumDrives / (1.2);
+        double driveDPH = (sumDrives / (1.2)) * 0.2;
         Row row5 = exportSheet.createRow(5);
         Cell drives = row5.createCell(0);
         Cell dSum = row5.createCell(1);
@@ -263,10 +295,10 @@ public class HyperBoostLogic {
         Cell dDPH = row5.createCell(3);
         Cell dCount = row5.createCell(4);
         drives.setCellValue("Vjazdy");
-        dSum.setCellValue(sumDriveIns);
+        dSum.setCellValue(sumDrives);
         dDPHless.setCellValue(driveNoDPH);
-        dDPH.setCellValue((sumDriveIns / (1.2)) * 0.2);
-        dCount.setCellValue(countDriveIns);
+        dDPH.setCellValue((sumDrives / (1.2)) * 0.2);
+        dCount.setCellValue(countDrives);
 
         // Total
         Row row6 = exportSheet.createRow(6);
@@ -276,7 +308,7 @@ public class HyperBoostLogic {
         Cell tDPH = row6.createCell(3);
         Cell tCount = row6.createCell(4);
         total.setCellValue("Spolu");
-        tSum.setCellValue((sumDriveIns + sumServices + sumRent + sumGoods));
+        tSum.setCellValue((sumDrives + sumServices + sumRent + sumGoods));
         double sumNoDPH = (driveNoDPH + servicesNoDPH + goodsNoDPH);
         tDPHless.setCellValue(sumNoDPH);
         double sumDPH = (driveDPH + servicesDPH + goodsDPH);
@@ -312,29 +344,47 @@ public class HyperBoostLogic {
         ciPrice.setCellValue("Jednotková cena");
 
         // Listing of uncategorized items
-        int i;
-        double sumUncategorized = 0;
-        for (i = 0; i < unCategorizedItems.size(); i++) {
-            sumUncategorized += unCategorizedItems.get(i).getPrice();
-            Row row = exportSheet.createRow(12 + i);
+        int rowCount;
+        int rowCountForServices;
+//        double sumUncategorized = 0;
+        for (rowCount = 0; rowCount < unCategorizedItems.size(); rowCount++) {
+//            sumUncategorized += unCategorizedItems.get(rowCount).getPrice();
+            Row row = exportSheet.createRow(12 + rowCount);
             Cell cellItem = row.createCell(0);
             Cell cellPrice = row.createCell(1);
             Cell cellCount = row.createCell(2);
             Cell cellItemPrice = row.createCell(3);
-            cellItem.setCellValue(unCategorizedItems.get(i).getItemName());
-            cellPrice.setCellValue(unCategorizedItems.get(i).getPrice());
-            cellCount.setCellValue(unCategorizedItems.get(i).getCount());
-            cellItemPrice.setCellValue((unCategorizedItems.get(i).getPrice() / unCategorizedItems.get(i).getCount()));
+            cellItem.setCellValue(unCategorizedItems.get(rowCount).getItemName());
+            cellPrice.setCellValue(unCategorizedItems.get(rowCount).getPrice());
+            cellCount.setCellValue(unCategorizedItems.get(rowCount).getCount());
+            cellItemPrice.setCellValue((unCategorizedItems.get(rowCount).getPrice() / unCategorizedItems.get(rowCount).getCount()));
         }
-        // Last row positioned on after latest row from previous for cycle
+        // Last row positioned after latest row from previous for cycle
         // this row is written total sum, count of uncategorized items
-        Row rowUncategorized = exportSheet.createRow(12 + i);
+        Row rowUncategorized = exportSheet.createRow(12 + rowCount);
         Cell uTotal = rowUncategorized.createCell(0);
         uTotal.setCellValue("Spolu");
         Cell uSum = rowUncategorized.createCell(1);
         uSum.setCellValue(sumUncategorized);
         Cell uCount = rowUncategorized.createCell(2);
         uCount.setCellValue(countUncategorizedTotal);
+
+        rowCountForServices = 14 + rowCount;
+        Row rowServices = exportSheet.createRow(rowCountForServices);
+        Cell service = rowServices.createCell(0);
+        service.setCellValue("Služby");
+        Cell servicePrice = rowServices.createCell(1);
+        servicePrice.setCellValue("Cena");
+        for (int i = 0; i < categorizedItems.size(); i++) {
+            if (categorizedItems.get(i).getItemType() == 3) {
+                rowCountForServices++;
+                Row rowService = exportSheet.createRow(rowCountForServices);
+                Cell cellService = rowService.createCell(0);
+                Cell cellServicePrice = rowService.createCell(1);
+                cellService.setCellValue(categorizedItems.get(i).getItemName());
+                cellServicePrice.setCellValue(categorizedItems.get(i).getPrice());
+            }
+        }
 
         workbookEkasa.write(fileOut);
         fileOut.close();
