@@ -146,7 +146,10 @@ public class HyperBoostLogic {
 
     void getRentsDriveInsServicesGoods() {
         for (DocumentItem item : Data.getInstance().getDocumentItems()) {
-            if (item.getItemName().contains("nájom")) {
+            if (item.getItemName().contains("viachrob")) {
+                item.setItemType(0);
+            }
+            else if (item.getItemName().contains("nájom")) {
                 //if only "najom"
                 if (item.getItemName().startsWith("nájom")) { //vzdy ale zacina s nájom
                     item.setItemType(0);
